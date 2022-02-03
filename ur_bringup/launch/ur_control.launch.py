@@ -26,7 +26,8 @@ def generate_launch_description():
     declared_arguments = []
     # UR specific arguments
     declared_arguments.append(
-        DeclareLaunchArgument("ur_type", description="Type/series of used UR robot.")
+        DeclareLaunchArgument(
+            "ur_type", description="Type/series of used UR robot.")
     )
     # TODO(anyone): enable this when added into ROS2-foxy
     # choices=['ur3', 'ur3e', 'ur5', 'ur5e', 'ur10', 'ur10e', 'ur16e']))
@@ -119,7 +120,8 @@ def generate_launch_description():
         )
     )
     declared_arguments.append(
-        DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?")
+        DeclareLaunchArgument(
+            "launch_rviz", default_value="true", description="Launch RViz?")
     )
 
     # Initialize Arguments
@@ -139,36 +141,51 @@ def generate_launch_description():
     robot_controller = LaunchConfiguration("robot_controller")
     launch_rviz = LaunchConfiguration("launch_rviz")
 
+    initial_positions = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config",
+         ur_type, "initial_positions.yaml"]
+    )
     joint_limit_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "joint_limits.yaml"]
+        [FindPackageShare(description_package), "config",
+         ur_type, "joint_limits.yaml"]
     )
     kinematics_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "default_kinematics.yaml"]
+        [FindPackageShare(description_package), "config",
+         ur_type, "default_kinematics.yaml"]
     )
     physical_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "physical_parameters.yaml"]
+        [FindPackageShare(description_package), "config",
+         ur_type, "physical_parameters.yaml"]
     )
     visual_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "visual_parameters.yaml"]
+        [FindPackageShare(description_package), "config",
+         ur_type, "visual_parameters.yaml"]
     )
     script_filename = PathJoinSubstitution(
-        [FindPackageShare("ur_robot_driver"), "resources", "ros_control.urscript"]
+        [FindPackageShare("ur_robot_driver"), "resources",
+         "ros_control.urscript"]
     )
     input_recipe_filename = PathJoinSubstitution(
-        [FindPackageShare("ur_robot_driver"), "resources", "rtde_input_recipe.txt"]
+        [FindPackageShare("ur_robot_driver"), "resources",
+         "rtde_input_recipe.txt"]
     )
     output_recipe_filename = PathJoinSubstitution(
-        [FindPackageShare("ur_robot_driver"), "resources", "rtde_output_recipe.txt"]
+        [FindPackageShare("ur_robot_driver"), "resources",
+         "rtde_output_recipe.txt"]
     )
 
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file]),
+            PathJoinSubstitution(
+                [FindPackageShare(description_package), "urdf", description_file]),
             " ",
             "robot_ip:=",
             robot_ip,
+            " ",
+            "initial_positions:=",
+            initial_positions,
             " ",
             "joint_limit_params:=",
             joint_limit_params,
@@ -281,7 +298,8 @@ def generate_launch_description():
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner.py",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        arguments=["joint_state_broadcaster",
+                   "--controller-manager", "/controller_manager"],
     )
 
     io_and_status_controller_spawner = Node(
